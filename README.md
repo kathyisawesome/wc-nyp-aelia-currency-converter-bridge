@@ -2,7 +2,7 @@
 
 This plugin adds compatibility between WooCommerce Name Your Price and Aelia Currency Converter.
 
-== Installation ==
+## Installation
 
 To install WC Name Your Price + Aelia Currency Converter Bridge:
 
@@ -14,7 +14,7 @@ To install WC Name Your Price + Aelia Currency Converter Bridge:
 
 4. After installation has completed you can activate the plugin right away or you can activate the 'WC Name Your Price + Aelia Currency Converter Bridge' extension through the 'Plugins' menu in WordPress at any time
 
-== How to Use ==
+## How to Use
 
 Just activate and go. 
 
