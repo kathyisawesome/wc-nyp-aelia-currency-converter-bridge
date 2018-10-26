@@ -18,3 +18,8 @@ To install WC Name Your Price + Aelia Currency Converter Bridge:
 
 Just activate and go. 
 
+## Important
+
+This is proof of concept and not officially supported in any way.
+
+
