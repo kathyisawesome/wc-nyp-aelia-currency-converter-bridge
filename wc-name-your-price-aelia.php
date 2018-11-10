@@ -42,6 +42,7 @@ class WC_NYP_Aelia_CC {
 		add_filter( 'woocommerce_get_cart_item_from_session', array( __CLASS__, 'convert_cart_currency' ), 20, 3 );
 		add_filter( 'woocommerce_raw_suggested_price', array( __CLASS__, 'convert_nyp_prices' ), 10, 2 );
 		add_filter( 'woocommerce_raw_minimum_price', array( __CLASS__, 'convert_nyp_prices' ), 10, 2 );
+		add_filter( 'woocommerce_raw_maximum_price', array( __CLASS__, 'convert_nyp_prices' ), 10, 2 );
 	}
 
 	/**
