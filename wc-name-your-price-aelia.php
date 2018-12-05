@@ -40,9 +40,9 @@ class WC_NYP_Aelia_CC {
 	public static function init() {
 		add_action( 'woocommerce_add_cart_item', array( __CLASS__, 'add_initial_currency' ) );
 		add_filter( 'woocommerce_get_cart_item_from_session', array( __CLASS__, 'convert_cart_currency' ), 20, 3 );
-		add_filter( 'woocommerce_raw_suggested_price', array( __CLASS__, 'convert_nyp_prices' ), 10, 2 );
-		add_filter( 'woocommerce_raw_minimum_price', array( __CLASS__, 'convert_nyp_prices' ), 10, 2 );
-		add_filter( 'woocommerce_raw_maximum_price', array( __CLASS__, 'convert_nyp_prices' ), 10, 2 );
+		add_filter( 'woocommerce_raw_suggested_price', array( __CLASS__, 'convert_price' ) );
+		add_filter( 'woocommerce_raw_minimum_price', array( __CLASS__, 'convert_price' ) );
+		add_filter( 'woocommerce_raw_maximum_price', array( __CLASS__, 'convert_price' ) );
 	}
 
 	/**
@@ -76,13 +76,7 @@ class WC_NYP_Aelia_CC {
 
 		// If the currency changed, convert the price entered by the customer into the active currency
 		if ( isset( $cart_item['nyp'] ) && isset( $cart_item['nyp_currency'] ) && $cart_item['nyp_currency'] != get_woocommerce_currency() ) {
-			/* This filter allows to call a conversion while still maintaining a loose coupling. It accepts a minimum of three arguments:
-			 * - Value to convert
-			 * - source currency
-			 * - destination currency
-			 * It returns the original converted to the destination currency
-			 */
-			$new_price = apply_filters( 'wc_aelia_cs_convert', $cart_item['nyp'], $cart_item['nyp_currency'], get_woocommerce_currency() );
+			$new_price = self::convert_price( $cart_item['nyp'], $cart_item['nyp_currency'] );
 			$cart_item['data']->set_price( $new_price );
 		}
 		
@@ -90,23 +84,51 @@ class WC_NYP_Aelia_CC {
 	}
 
 	/**
-	 * User Aelia to convert the suggested and min prices.
+	 * Convert the suggested, min, and max prices.
 	 *
 	 * @static
-	 * @param array $cart_item
+	 * @param string $price
 	 * @return array
 	 * @since 0.1.0
+	 * @deprecated 0.3.0
 	 */
-	public static function convert_nyp_prices( $price, $product ) {
-			/* This filter allows to call a conversion while still maintaining a loose coupling. It accepts a minimum of three arguments:
-			 * - Value to convert
-			 * - source currency
-			 * - destination currency
-			 * It returns the original converted to the destination currency
-			 */
-		return apply_filters( 'wc_aelia_cs_convert', $price, get_option( 'woocommerce_currency' ), get_woocommerce_currency() );
+	public static function convert_nyp_prices( $price ) {
+		_deprecated_function( __FUNCTION__, '0.3.0', 'WC_NYP_Aelia_CC::convert_price' );
+		return self::convert_price( $price );
 	}
 
+
+	/**
+	 * Wrapper function to convert a price from one currency to another.
+	 *
+	 * @static
+	 * @param string $price
+	 * @param string $from_currency
+	 * @param string $to_currency
+	 * 
+	 * @return string
+	 * @since 0.3.0
+	 */
+	public static function convert_price( $price, $from_currency = false, $to_currency = false ) {
+
+		// Source currency.
+		if( ! $from_currency ){
+			$from_currency = get_option( 'woocommerce_currency' );
+		}
+
+		// Destination currency.
+		if( ! $to_currency ){
+			$to_currency = get_woocommerce_currency();
+		}
+
+		/* This filter allows to call a conversion while still maintaining a loose coupling. It accepts a minimum of three arguments:
+		 * - Value to convert
+		 * - source currency
+		 * - destination currency
+		 * It returns the original converted to the destination currency
+		 */
+		return apply_filters( 'wc_aelia_cs_convert', $price, $from_currency, $to_currency );
+	}
 
 } //end class: do not remove or there will be no more guacamole for you
 
