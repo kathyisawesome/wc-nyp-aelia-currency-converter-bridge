@@ -3,7 +3,7 @@
  * Plugin Name: WC Name Your Price + Aelia Currency Converter Bridge
  * Plugin URI:  http://github.com/helgatheviking/wc-nyp-aelia-currency-converter-bridge
  * Description: A bridge plugin to add compatibility between Name Your Price and Aelia Currency Converter
- * Version:     0.2.0
+ * Version:     0.3.0
  * Author:      Kathy Darling
  * Author URI:  http://www.kathyisawesome.com
  * License: GNU General Public License v3.0
@@ -13,11 +13,11 @@
  * Requires at least: 4.8.0
  * Tested up to: 4.9.x
  * WC requires at least: 3.0.0
- * WC tested up to: 3.3.0   
+ * WC tested up to: 3.5.0   
  */
 
 /**
- * Copyright: © 2017 Kathy Darling.
+ * Copyright: © 2018 Kathy Darling.
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */
