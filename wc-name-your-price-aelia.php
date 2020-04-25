@@ -67,7 +67,9 @@ class WC_NYP_Aelia_CC {
 		foreach ( $raw_price_tags as $tag ) {
 			add_filter(
 				$tag,
-				array( __CLASS__, 'convert_price' )
+				array( __CLASS__, 'convert_nyp_prices' ),
+				10,
+				3
 			);
 		}
 
@@ -122,15 +124,36 @@ class WC_NYP_Aelia_CC {
 	 *
 	 * @static
 	 * @param string $price
-	 * @return array
+	 * @param  int $produce_id
+	 * @param  obj WC_Product $product
+	 * @return string
 	 * @since 0.1.0
-	 * @deprecated 0.3.0
-	 */
-	public static function convert_nyp_prices( $price ) {
-		_deprecated_function( __FUNCTION__, '0.3.0', 'WC_NYP_Aelia_CC::convert_price' );
-		return self::convert_price( $price );
-	}
 
+	 */
+	public static function convert_nyp_prices( $price, $product_id, $product ) {
+		
+		$active_currency = get_woocommerce_currency();
+
+		$current_filter = current_filter();
+
+		// Get the possible meta value.
+		$meta_key = str_replace( 'wc_nyp_raw', '', current_filter() );
+
+		// Patch for actual minimum meta key.
+		if( '_minimum_price' === $meta_key ) {
+			$meta_key = '_min_price';
+		}
+
+		$meta_value = $product->get_meta( $meta_key . '_' . $active_currency, true );
+
+		// If there's no meta value, automatically convert it.
+		if( ! $meta_value ) {
+			$meta_value = self::convert_price( $price );
+		}
+
+		return $meta_value;
+
+	}
 
 	/**
 	 * Wrapper function to convert a price from one currency to another.
@@ -153,7 +176,7 @@ class WC_NYP_Aelia_CC {
 		// Destination currency.
 		if( ! $to_currency ){
 			$to_currency = get_woocommerce_currency();
-		}
+		}		
 
 		/* This filter allows to call a conversion while still maintaining a loose coupling. It accepts a minimum of three arguments:
 		 * - Value to convert
