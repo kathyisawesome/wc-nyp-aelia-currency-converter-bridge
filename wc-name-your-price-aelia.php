@@ -106,8 +106,8 @@ class WC_NYP_Aelia_CC {
 	 */
 	public static function convert_cart_currency( $cart_item, $key, $values ) {
 
-		// If the currency changed, convert the price entered by the customer into the active currency
-		if ( isset( $cart_item['nyp'] ) && isset( $cart_item['nyp_currency'] ) && $cart_item['nyp_currency'] != get_woocommerce_currency() ) {
+		// If the currency changed, convert the price entered by the customer into the active currency.
+		if ( isset( $cart_item['nyp'] ) && isset( $cart_item['nyp_currency'] ) && $cart_item['nyp_currency'] !== get_woocommerce_currency() ) {
 			$new_price = self::convert_price( $cart_item['nyp'], $cart_item['nyp_currency'] );
 			$cart_item['data']->set_price( $new_price );
 		}
