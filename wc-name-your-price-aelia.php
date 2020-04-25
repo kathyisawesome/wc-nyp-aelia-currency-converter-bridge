@@ -40,9 +40,41 @@ class WC_NYP_Aelia_CC {
 	public static function init() {
 		add_action( 'woocommerce_add_cart_item', array( __CLASS__, 'add_initial_currency' ) );
 		add_filter( 'woocommerce_get_cart_item_from_session', array( __CLASS__, 'convert_cart_currency' ), 20, 3 );
-		add_filter( 'woocommerce_raw_suggested_price', array( __CLASS__, 'convert_price' ) );
-		add_filter( 'woocommerce_raw_minimum_price', array( __CLASS__, 'convert_price' ) );
-		add_filter( 'woocommerce_raw_maximum_price', array( __CLASS__, 'convert_price' ) );
+		
+		$raw_price_tags = array(
+			'woocommerce_raw_suggested_price',
+			'woocommerce_raw_minimum_price',
+			'woocommerce_raw_maximum_price',
+		);
+
+		/**
+		 * Filter tags renamed in NYP 3+.
+		 * Method is_nyp_gte exists in NYP 3+.
+		 *
+		 * @noinspection PhpUndefinedMethodInspection
+		 */
+		if (
+			is_callable( array( 'WC_Name_Your_Price_Compatibility', 'is_nyp_gte' ) )
+			&& WC_Name_Your_Price_Compatibility::is_nyp_gte( '3.0' )
+		) {
+			$raw_price_tags = array(
+				'wc_nyp_raw_suggested_price',
+				'wc_nyp_raw_minimum_price',
+				'wc_nyp_raw_maximum_price',
+			);
+		}
+
+		foreach ( $raw_price_tags as $tag ) {
+			add_filter(
+				$tag,
+				array( __CLASS__, 'convert_price' )
+			);
+		}
+
+		// Admin
+		add_action( 'wc_nyp_options_pricing', array( __CLASS__, 'pricing_options' ), 100, 2 );
+		add_action( 'woocommerce_admin_process_product_object', array( __CLASS__, 'save_product_meta' ) );
+
 	}
 
 	/**
