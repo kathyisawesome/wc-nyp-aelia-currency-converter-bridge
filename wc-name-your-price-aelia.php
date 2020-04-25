@@ -110,6 +110,8 @@ class WC_NYP_Aelia_CC {
 		if ( isset( $cart_item['nyp'] ) && isset( $cart_item['nyp_currency'] ) && $cart_item['nyp_currency'] !== get_woocommerce_currency() ) {
 			$new_price = self::convert_price( $cart_item['nyp'], $cart_item['nyp_currency'] );
 			$cart_item['data']->set_price( $new_price );
+			$cart_item['data']->set_regular_price( $new_price );
+			$cart_item['data']->set_sale_price( $new_price );
 		}
 		
 		return $cart_item;
