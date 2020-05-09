@@ -38,6 +38,11 @@ class WC_NYP_Aelia_CC {
 	 * @since 0.1.0
 	 */
 	public static function init() {
+
+		if( ! class_exists( 'WC_Name_Your_Price' ) ) {
+			return;
+		}
+
 		add_action( 'woocommerce_add_cart_item', array( __CLASS__, 'add_initial_currency' ) );
 		add_filter( 'woocommerce_get_cart_item_from_session', array( __CLASS__, 'convert_cart_currency' ), 20, 3 );
 		
@@ -91,8 +96,9 @@ class WC_NYP_Aelia_CC {
 
 		$nyp_id = $cart_item['variation_id'] ? $cart_item['variation_id'] : $cart_item['product_id'];
 
-		if ( WC_Name_Your_Price_Helpers::is_nyp( $nyp_id ) ) {
+		if ( WC_Name_Your_Price_Helpers::is_nyp( $nyp_id ) && isset( $cart_item['nyp'] ) ) {
 			$cart_item['nyp_currency'] = get_woocommerce_currency();
+			$cart_item['nyp_original'] = $cart_item['nyp'];
 		}
 
 		return $cart_item;
@@ -101,19 +107,29 @@ class WC_NYP_Aelia_CC {
 	/**
 	 * Switch the cart price when currency changes.
 	 *
-	 * @static
-	 * @param array $cart_item
+	 * @param bool $remove_cart_item_from_session If true, the item will not be added to the cart. Default: false.
+	 * @param array $values Cart item values e.g. quantity and product_id.
+	 * @param string $key Cart item key.
 	 * @return array
 	 * @since 0.1.0
 	 */
-	public static function convert_cart_currency( $cart_item, $key, $values ) {
+	public static function convert_cart_currency( $cart_item, $values, $key ) {
 
-		// If the currency changed, convert the price entered by the customer into the active currency.
-		if ( isset( $cart_item['nyp'] ) && isset( $cart_item['nyp_currency'] ) && $cart_item['nyp_currency'] !== get_woocommerce_currency() ) {
-			$new_price = self::convert_price( $cart_item['nyp'], $cart_item['nyp_currency'] );
+		if ( isset( $cart_item['nyp_original'] ) && isset( $cart_item['nyp_currency'] ) ) {
+
+			// If the currency changed, convert the price entered by the customer into the active currency.
+			if( $cart_item['nyp_currency'] !== get_woocommerce_currency() ) {
+				$new_price = self::convert_price( $cart_item['nyp_original'], $cart_item['nyp_currency'] );
+			// Otherwise, put it back to the original amount.
+			} else {
+				$new_price = $cart_item['nyp_original'];
+			}
+
+			$cart_item['nyp'] = $new_price;
 			$cart_item['data']->set_price( $new_price );
 			$cart_item['data']->set_regular_price( $new_price );
 			$cart_item['data']->set_sale_price( $new_price );
+
 		}
 		
 		return $cart_item;
@@ -326,4 +342,4 @@ class WC_NYP_Aelia_CC {
 endif; // end class_exists check
 
 // Launch the whole plugin.
-add_action( 'plugins_loaded', array( 'WC_NYP_Aelia_CC', 'init' ) );
+add_action( 'plugins_loaded', array( 'WC_NYP_Aelia_CC', 'init' ), 20 );
