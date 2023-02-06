@@ -1,5 +1,7 @@
 # WC Name Your Price + Aelia Currency Converter Bridge
 
+Archived as this module is included in Name Your Price 3.5.0.
+
 This plugin adds compatibility between WooCommerce Name Your Price and Aelia Currency Converter.
 
 ## Installation
